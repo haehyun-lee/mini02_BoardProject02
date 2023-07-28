@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="게시판" >
+        <menu >
+            <item
+                android:id="@+id/item_board_main_all"
+                android:icon="@drawable/assignment_24px"
+                android:title="전체게시판"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/item_board_main_free"
+                android:icon="@drawable/content_paste_24px"
+                android:title="자유게시판"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/item_board_main_gag"
+                android:icon="@drawable/sentiment_very_satisfied_24px"
+                android:title="유머게시판"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/item_board_main_qna"
+                android:icon="@drawable/help_24px"
+                android:title="질문게시판"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/item_board_main_sports"
+                android:icon="@drawable/sports_soccer_24px"
+                android:title="스포츠게시판"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/item_board_main_user_info"
+        android:icon="@drawable/badge_24px"
+        android:title="사용자 정보 수정"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/item_board_main_logout"
+        android:icon="@drawable/logout_24px"
+        android:title="로그아웃"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/item_board_main_sign_out"
+        android:icon="@drawable/account_circle_off_24px"
+        android:title="회원탈퇴"
+        app:showAsAction="ifRoom" />
+</menu>
