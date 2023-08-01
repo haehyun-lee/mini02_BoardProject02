@@ -14,9 +14,10 @@ import com.test.mini02_boardproject02.databinding.FragmentPostListBinding
 import com.test.mini02_boardproject02.databinding.RowPostListBinding
 
 // replaceFragment, removeFragment 메서드 사용을 위해 BoardMainFragment 받기
-class PostListFragment(var boardMainFragment: BoardMainFragment) : Fragment() {
+class PostListFragment() : Fragment() {
     lateinit var fragmentPostListBinding: FragmentPostListBinding
     lateinit var mainActivity: MainActivity
+    // lateinit var boardMainFragment: BoardMainFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,6 +25,8 @@ class PostListFragment(var boardMainFragment: BoardMainFragment) : Fragment() {
     ): View? {
         fragmentPostListBinding = FragmentPostListBinding.inflate(inflater)
         mainActivity = activity as MainActivity
+        // fragmentContainer를 포함하고 있는 Fragment 객체
+        // boardMainFragment = mainActivity.newFragment as BoardMainFragment
 
         fragmentPostListBinding.run{
             val toolbar = mainActivity.findViewById<MaterialToolbar>(R.id.toolbarBoardMain)
@@ -37,7 +40,7 @@ class PostListFragment(var boardMainFragment: BoardMainFragment) : Fragment() {
                     when (it.itemId) {
                         R.id.item_post_list_add -> {
                             // 글 추가
-                            boardMainFragment.replaceFragment(BoardMainFragment.POST_WRITE_FRAGMENT, true, false, null)
+                            mainActivity.replaceFragment(MainActivity.POST_WRITE_FRAGMENT, true, null)
                         }
                     }
                     false
@@ -73,7 +76,7 @@ class PostListFragment(var boardMainFragment: BoardMainFragment) : Fragment() {
 
                 rowPostListBinding.root.setOnClickListener {
                     // 글 보기
-                    boardMainFragment.replaceFragment(BoardMainFragment.POST_READ_FRAGMENT, true, false, null)
+                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, null)
                 }
             }
         }
@@ -112,7 +115,7 @@ class PostListFragment(var boardMainFragment: BoardMainFragment) : Fragment() {
                 rowPostListSubject = rowPostListBinding.rowPostListSubject
                 rowPostListNickName = rowPostListBinding.rowPostListNickName
                 rowPostListBinding.root.setOnClickListener {
-                    boardMainFragment.replaceFragment(BoardMainFragment.POST_READ_FRAGMENT, true, false, null)
+                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, null)
                 }
             }
         }

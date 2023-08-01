@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialSharedAxis
 import com.test.mini02_boardproject02.databinding.FragmentBoardMainBinding
 import com.test.mini02_boardproject02.databinding.HeaderBoardMainBinding
@@ -22,10 +23,6 @@ class BoardMainFragment : Fragment() {
     companion object{
         val POST_LIST_FRAGMENT = "PostListFragment"
         val MODIFY_USER_FRAGMENT = "ModifyUserFragment"
-
-        val POST_WRITE_FRAGMENT = "PostWriteFragment"
-        val POST_READ_FRAGMENT = "PostReadFragment"
-        val POST_MODIFY_FRAGMENT = "PostModifyFragment"
     }
 
     override fun onCreateView(
@@ -37,6 +34,8 @@ class BoardMainFragment : Fragment() {
         mainActivity = activity as MainActivity
 
         fragmentBoardMainBinding.run{
+            // Snackbar.make(fragmentBoardMainBinding.linearLayout, "로그인 되었습니다.", Snackbar.LENGTH_SHORT).show()
+
             // toolbar
             toolbarBoardMain.run{
                 title = "게시판메인"
@@ -53,7 +52,8 @@ class BoardMainFragment : Fragment() {
 
                 // 헤더설정
                 val headerBoardMainBinding = HeaderBoardMainBinding.inflate(inflater)
-                headerBoardMainBinding.textViewHeaderBoardMainNickName.text  = "홍길동님"
+                // 로그인 사용자 닉네임 가져와서 등록
+                headerBoardMainBinding.textViewHeaderBoardMainNickName.text  = "${mainActivity.loginUser.nickName}님"
                 addHeaderView(headerBoardMainBinding.root)
 
                 // 항목 선택시 동작하는 리스너
@@ -131,11 +131,8 @@ class BoardMainFragment : Fragment() {
 
         // 새로운 Fragment를 담을 변수
         newFragment = when(name){
-            POST_LIST_FRAGMENT -> PostListFragment(this@BoardMainFragment)
+            POST_LIST_FRAGMENT -> PostListFragment()
             MODIFY_USER_FRAGMENT -> ModifyUserFragment()
-            POST_WRITE_FRAGMENT -> PostWriteFragment(this@BoardMainFragment)
-            POST_READ_FRAGMENT -> PostReadFragment(this@BoardMainFragment)
-            POST_MODIFY_FRAGMENT -> PostModifyFragment(this@BoardMainFragment)
             else -> Fragment()
         }
 
@@ -187,13 +184,5 @@ class BoardMainFragment : Fragment() {
     fun removeFragment(name:String){
         mainActivity.supportFragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
-
-    // Fragment에 따라 메뉴 변경
-//    fun replaceToolbarMenu(menuResId: Int) {
-//        fragmentBoardMainBinding.toolbarBoardMain.run {
-//            menu.clear()
-//            inflateMenu(menuResId)
-//        }
-//    }
 
 }
