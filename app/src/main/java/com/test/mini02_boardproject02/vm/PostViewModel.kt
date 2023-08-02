@@ -12,7 +12,7 @@ import java.net.URL
 import kotlin.concurrent.thread
 
 class PostViewModel:ViewModel() {
-    // val post = MutableLiveData<Post>()
+     // val post = MutableLiveData<Post>()
     var title = MutableLiveData<String>()
     var content = MutableLiveData<String>()
     var imageUri = MutableLiveData<Bitmap>()

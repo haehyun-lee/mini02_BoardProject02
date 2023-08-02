@@ -26,18 +26,18 @@ class PostReadFragment() : Fragment() {
         val postIdx = arguments?.getLong("postIdx", 0L)
         
         // ViewModel 객체
-        postViewModel = ViewModelProvider(this@PostReadFragment)[PostViewModel::class.java]
+        postViewModel = ViewModelProvider(mainActivity)[PostViewModel::class.java]
 
         fragmentPostReadBinding.run{
             // ViewModel Observer
             postViewModel.run {
-                title.observe(viewLifecycleOwner){
+                title.observe(mainActivity){
                     textInputEditTextPostReadSubject.setText(it)
                 }
-                content.observe(viewLifecycleOwner){
+                content.observe(mainActivity){
                     textInputEditTextPostReadText.setText(it)
                 }
-                imageUri.observe(viewLifecycleOwner){
+                imageUri.observe(mainActivity){
                     imageViewPostRead.setImageBitmap(it)
                 }
             }
