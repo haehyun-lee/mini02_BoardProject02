@@ -6,18 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.test.mini02_boardproject02.databinding.FragmentPostListBinding
 import com.test.mini02_boardproject02.databinding.RowPostListBinding
+import com.test.mini02_boardproject02.vm.PostListViewModel
 
 // replaceFragment, removeFragment 메서드 사용을 위해 BoardMainFragment 받기
 class PostListFragment() : Fragment() {
     lateinit var fragmentPostListBinding: FragmentPostListBinding
     lateinit var mainActivity: MainActivity
     // lateinit var boardMainFragment: BoardMainFragment
+
+    lateinit var postListViewModel: PostListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,9 +31,11 @@ class PostListFragment() : Fragment() {
         // fragmentContainer를 포함하고 있는 Fragment 객체
         // boardMainFragment = mainActivity.newFragment as BoardMainFragment
 
+        postListViewModel = ViewModelProvider(this@PostListFragment)[PostListViewModel::class.java]
+
         fragmentPostListBinding.run{
-            val toolbar = mainActivity.findViewById<MaterialToolbar>(R.id.toolbarBoardMain)
-            toolbar.menu.clear()
+            // val toolbar = mainActivity.findViewById<MaterialToolbar>(R.id.toolbarBoardMain)
+            // toolbar.menu.clear()
 
             // SearchBar 메뉴 설정
             searchBarPostList.run {
@@ -58,6 +63,13 @@ class PostListFragment() : Fragment() {
                 layoutManager = LinearLayoutManager(context)
                 addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
             }
+
+            postListViewModel.run {
+                postListLiveData.observe(viewLifecycleOwner){
+                    recyclerViewPostListAll.adapter?.notifyDataSetChanged()
+                    recyclerViewPostListResult.adapter?.notifyDataSetChanged()
+                }
+            }
         }
 
         return fragmentPostListBinding.root
@@ -66,6 +78,7 @@ class PostListFragment() : Fragment() {
     // 모든 게시글 목록을 보여주는 리사이클러 뷰의 어뎁터
     inner class AllRecyclerViewAdapter : RecyclerView.Adapter<AllRecyclerViewAdapter.AllViewHolder>(){
         inner class AllViewHolder(rowPostListBinding: RowPostListBinding) : RecyclerView.ViewHolder(rowPostListBinding.root){
+            var postIdx = 0L
 
             val rowPostListSubject:TextView
             val rowPostListNickName:TextView
@@ -77,7 +90,7 @@ class PostListFragment() : Fragment() {
                 rowPostListBinding.root.setOnClickListener {
                     // 글 보기
                     val newBundle = Bundle()
-                    newBundle.putLong("postIdx", adapterPosition.toLong())
+                    newBundle.putLong("postIdx", postIdx)
                     mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, newBundle)
                 }
             }
@@ -96,12 +109,16 @@ class PostListFragment() : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return 100
+            return postListViewModel.postListLiveData.value?.size!!
         }
 
         override fun onBindViewHolder(holder: AllViewHolder, position: Int) {
-            holder.rowPostListSubject.text = "제목입니다 : $position"
-            holder.rowPostListNickName.text = "작성자 : $position"
+            val curPost = postListViewModel.postListLiveData.value?.get(position)!!
+
+            holder.postIdx = curPost.idx
+            holder.rowPostListSubject.text = "${curPost.title}"
+            // TODO 작성자 데이터 읽어오기
+            holder.rowPostListNickName.text = "${curPost.authorIdx}"
         }
     }
 
@@ -109,6 +126,7 @@ class PostListFragment() : Fragment() {
     // 검색 결과 게시글 목록을 보여주는 리사이클러 뷰의 어뎁터
     inner class ResultRecyclerViewAdapter : RecyclerView.Adapter<ResultRecyclerViewAdapter.ResultViewHolder>(){
         inner class ResultViewHolder(rowPostListBinding: RowPostListBinding) : RecyclerView.ViewHolder(rowPostListBinding.root){
+            var postIdx = 0L
 
             val rowPostListSubject:TextView
             val rowPostListNickName:TextView
@@ -118,8 +136,8 @@ class PostListFragment() : Fragment() {
                 rowPostListNickName = rowPostListBinding.rowPostListNickName
                 rowPostListBinding.root.setOnClickListener {
                     val newBundle = Bundle()
-                    newBundle.putLong("postIdx", adapterPosition.toLong())
-                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, null)
+                    newBundle.putLong("postIdx", postIdx)
+                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, newBundle)
                 }
             }
         }
@@ -137,13 +155,22 @@ class PostListFragment() : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return 100
+            return postListViewModel.postListLiveData.value?.size!!
         }
 
         override fun onBindViewHolder(holder: ResultViewHolder, position: Int) {
-            holder.rowPostListSubject.text = "제목입니다 : $position"
-            holder.rowPostListNickName.text = "작성자 : $position"
+            val curPost = postListViewModel.postListLiveData.value?.get(position)!!
+
+            holder.postIdx = curPost.idx
+            holder.rowPostListSubject.text = "${curPost.title}"
+            // TODO 작성자 데이터 읽어오기
+            holder.rowPostListNickName.text = "${curPost.authorIdx}"
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        postListViewModel.getPostAll()
     }
 }
 

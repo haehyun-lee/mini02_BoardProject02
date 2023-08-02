@@ -35,7 +35,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPostWriteSubject"
+                android:id="@+id/textInputLayoutPostWriteTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -45,7 +45,7 @@
                 app:startIconDrawable="@drawable/edit_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/text_input_edit_text_post_write_title"
+                    android:id="@+id/textInputEditTextPostWriteTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text" />

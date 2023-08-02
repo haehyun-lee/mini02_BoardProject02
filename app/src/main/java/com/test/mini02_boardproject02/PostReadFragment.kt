@@ -19,6 +19,7 @@ class PostReadFragment() : Fragment() {
     lateinit var mainActivity: MainActivity
 
     lateinit var postViewModel: PostViewModel
+    var postIdx :Long = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,28 +29,36 @@ class PostReadFragment() : Fragment() {
         mainActivity = activity as MainActivity
         
         // 현재 표시할 게시글 번호
-        val postIdx = arguments?.getLong("postIdx", 0L)
+        postIdx = arguments?.getLong("postIdx", 0L)!!
         
         // ViewModel 객체
-        postViewModel = ViewModelProvider(mainActivity)[PostViewModel::class.java]
+        postViewModel = ViewModelProvider(this@PostReadFragment)[PostViewModel::class.java]
 
         fragmentPostReadBinding.run{
+            // 뷰 초기화
+            textInputEditTextPostReadTitle.setText("")
+            textInputEditTextPostReadContent.setText("")
+            imageViewPostRead.setImageResource(0)
+
             // ViewModel Observer
             postViewModel.run {
-                postLiveData.observe(mainActivity){
-                    textInputEditTextPostReadSubject.setText(it.title)
-                    textInputEditTextPostReadText.setText(it.content)
-                    // Firebase에서 이미지 내려받아서 세팅
-                    val storage = FirebaseStorage.getInstance()
-                    val fileRef = storage.reference.child(it.imageUri)
+                postLiveData.observe(viewLifecycleOwner){
+                    textInputEditTextPostReadTitle.setText(it.title)
+                    textInputEditTextPostReadContent.setText(it.content)
 
-                    fileRef.downloadUrl.addOnSuccessListener {
-                        thread {
-                            val url = URL(it.toString())
-                            val httpURLConnection = url.openConnection() as HttpURLConnection
-                            val bitmap = BitmapFactory.decodeStream(httpURLConnection.inputStream)
-                            mainActivity.runOnUiThread {
-                                imageViewPostRead.setImageBitmap(bitmap)
+                    // Firebase에서 이미지 내려받아서 세팅
+                    if (it.image != "None") {
+                        val storage = FirebaseStorage.getInstance()
+                        val fileRef = storage.reference.child(it.image)
+
+                        fileRef.downloadUrl.addOnSuccessListener {
+                            thread {
+                                val url = URL(it.toString())
+                                val httpURLConnection = url.openConnection() as HttpURLConnection
+                                val bitmap = BitmapFactory.decodeStream(httpURLConnection.inputStream)
+                                mainActivity.runOnUiThread {
+                                    imageViewPostRead.setImageBitmap(bitmap)
+                                }
                             }
                         }
                     }
@@ -100,4 +109,10 @@ class PostReadFragment() : Fragment() {
         return fragmentPostReadBinding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 게시글 내용으로 ViewModel 데이터 변경
+        // postViewModel.getPostData(postIdx!!)
+
+    }
 }

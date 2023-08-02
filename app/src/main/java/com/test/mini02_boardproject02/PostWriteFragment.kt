@@ -83,6 +83,8 @@ class PostWriteFragment : Fragment() {
         albumLauncher = albumSetting(fragmentPostWriteBinding.imageViewPostWrite)
 
         fragmentPostWriteBinding.run {
+            imageViewPostWrite.setImageResource(0)
+
             toolbarPostWrite.run {
                 title = "글 작성"
                 setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
@@ -190,7 +192,7 @@ class PostWriteFragment : Fragment() {
                                     val postDataRef = database.getReference("PostData")
                                     postDataRef.push().setValue(post).addOnCompleteListener {
                                         postIdxRef.get().addOnCompleteListener {
-                                            // 다음 대비 인덱스 값 갱신
+                                            // 다음 대비 방금 사용한 인덱스 값 갱신
                                             it.result.ref.setValue(postIdx)
                                             if (imageUploadUri != null) {
                                                 val storage = FirebaseStorage.getInstance()

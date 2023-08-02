@@ -26,7 +26,7 @@
             android:padding="10dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPostReadSubject"
+                android:id="@+id/textInputLayoutPostReadTitle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="제목"
@@ -34,7 +34,7 @@
                 app:startIconDrawable="@drawable/edit_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditTextPostReadSubject"
+                    android:id="@+id/textInputEditTextPostReadTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:editable="false"
@@ -45,7 +45,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPostReadText"
+                android:id="@+id/textInputLayoutPostReadContent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
@@ -54,7 +54,7 @@
                 app:startIconDrawable="@drawable/assignment_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditTextPostReadText"
+                    android:id="@+id/textInputEditTextPostReadContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:editable="false"
