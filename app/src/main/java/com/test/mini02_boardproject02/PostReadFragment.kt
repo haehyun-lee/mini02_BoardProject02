@@ -1,13 +1,18 @@
 package com.test.mini02_boardproject02
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.storage.FirebaseStorage
 import com.test.mini02_boardproject02.databinding.FragmentPostReadBinding
 import com.test.mini02_boardproject02.vm.PostViewModel
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 
 class PostReadFragment() : Fragment() {
     lateinit var fragmentPostReadBinding: FragmentPostReadBinding
@@ -31,14 +36,23 @@ class PostReadFragment() : Fragment() {
         fragmentPostReadBinding.run{
             // ViewModel Observer
             postViewModel.run {
-                title.observe(mainActivity){
-                    textInputEditTextPostReadSubject.setText(it)
-                }
-                content.observe(mainActivity){
-                    textInputEditTextPostReadText.setText(it)
-                }
-                imageUri.observe(mainActivity){
-                    imageViewPostRead.setImageBitmap(it)
+                postLiveData.observe(mainActivity){
+                    textInputEditTextPostReadSubject.setText(it.title)
+                    textInputEditTextPostReadText.setText(it.content)
+                    // Firebase에서 이미지 내려받아서 세팅
+                    val storage = FirebaseStorage.getInstance()
+                    val fileRef = storage.reference.child(it.imageUri)
+
+                    fileRef.downloadUrl.addOnSuccessListener {
+                        thread {
+                            val url = URL(it.toString())
+                            val httpURLConnection = url.openConnection() as HttpURLConnection
+                            val bitmap = BitmapFactory.decodeStream(httpURLConnection.inputStream)
+                            mainActivity.runOnUiThread {
+                                imageViewPostRead.setImageBitmap(bitmap)
+                            }
+                        }
+                    }
                 }
             }
 
