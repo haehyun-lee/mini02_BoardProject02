@@ -189,21 +189,10 @@ class MainActivity : AppCompatActivity() {
 
 // 사용자 정보
 data class User(
-    var idx: Long,
-    var id: String,
-    var password: String,
-    var nickName: String,
-    var age: Long,
-    var hobby: MutableList<String>
-)
-
-// 게시글
-data class Post(
-    var idx: Long,
-    var title: String,
-    var content: String,
-    var imageUrl: String,
-    var author: Long,
-    var timestamp: String,
-    var categoryIdx: Int
+    var idx: Long,                  // 인덱스
+    var id: String,                 // 사용자 아이디
+    var password: String,           // 비밀번호
+    var nickName: String,           // 닉네임
+    var age: Long,                  // 나이
+    var hobby: MutableList<String>  // 취미 목록
 )

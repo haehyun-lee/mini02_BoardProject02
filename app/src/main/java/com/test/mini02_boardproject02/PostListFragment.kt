@@ -76,7 +76,9 @@ class PostListFragment() : Fragment() {
 
                 rowPostListBinding.root.setOnClickListener {
                     // 글 보기
-                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, null)
+                    val newBundle = Bundle()
+                    newBundle.putLong("postIdx", adapterPosition.toLong())
+                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, newBundle)
                 }
             }
         }
@@ -115,6 +117,8 @@ class PostListFragment() : Fragment() {
                 rowPostListSubject = rowPostListBinding.rowPostListSubject
                 rowPostListNickName = rowPostListBinding.rowPostListNickName
                 rowPostListBinding.root.setOnClickListener {
+                    val newBundle = Bundle()
+                    newBundle.putLong("postIdx", adapterPosition.toLong())
                     mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, null)
                 }
             }

@@ -5,11 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.test.mini02_boardproject02.databinding.FragmentPostReadBinding
+import com.test.mini02_boardproject02.vm.PostViewModel
 
 class PostReadFragment() : Fragment() {
     lateinit var fragmentPostReadBinding: FragmentPostReadBinding
     lateinit var mainActivity: MainActivity
+
+    lateinit var postViewModel: PostViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -19,12 +23,28 @@ class PostReadFragment() : Fragment() {
         mainActivity = activity as MainActivity
         
         // 현재 표시할 게시글 번호
-        val postIdx = arguments?.getLong("postIdx")
+        val postIdx = arguments?.getLong("postIdx", 0L)
         
-        // 데이터베이스에서 포스트 읽어오기
-        // TODO MVVM 모델 사용 예정
+        // ViewModel 객체
+        postViewModel = ViewModelProvider(this@PostReadFragment)[PostViewModel::class.java]
 
         fragmentPostReadBinding.run{
+            // ViewModel Observer
+            postViewModel.run {
+                title.observe(viewLifecycleOwner){
+                    textInputEditTextPostReadSubject.setText(it)
+                }
+                content.observe(viewLifecycleOwner){
+                    textInputEditTextPostReadText.setText(it)
+                }
+                imageUri.observe(viewLifecycleOwner){
+                    imageViewPostRead.setImageBitmap(it)
+                }
+            }
+
+            // 게시글 내용으로 ViewModel 데이터 변경
+            postViewModel.getPostData(postIdx!!)
+
             toolbarPostRead.run{
                 title = "글읽기"
                 setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
