@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.test.mini02_boardproject02.databinding.FragmentPostListBinding
 import com.test.mini02_boardproject02.databinding.RowPostListBinding
-import com.test.mini02_boardproject02.vm.PostListViewModel
+import com.test.mini02_boardproject02.repository.UserRepository
+import com.test.mini02_boardproject02.vm.PostViewModel
 
 // replaceFragment, removeFragment 메서드 사용을 위해 BoardMainFragment 받기
 class PostListFragment() : Fragment() {
@@ -20,7 +21,7 @@ class PostListFragment() : Fragment() {
     lateinit var mainActivity: MainActivity
     // lateinit var boardMainFragment: BoardMainFragment
 
-    lateinit var postListViewModel: PostListViewModel
+    lateinit var postViewModel: PostViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +32,14 @@ class PostListFragment() : Fragment() {
         // fragmentContainer를 포함하고 있는 Fragment 객체
         // boardMainFragment = mainActivity.newFragment as BoardMainFragment
 
-        postListViewModel = ViewModelProvider(this@PostListFragment)[PostListViewModel::class.java]
+        postViewModel = ViewModelProvider(mainActivity)[PostViewModel::class.java]
+        postViewModel.run {
+            postDataList.observe(mainActivity){
+                // 게시물 목록이 변경되면 RecyclerView 갱신
+                fragmentPostListBinding.recyclerViewPostListAll.adapter?.notifyDataSetChanged()
+                fragmentPostListBinding.recyclerViewPostListResult.adapter?.notifyDataSetChanged()
+            }
+        }
 
         fragmentPostListBinding.run{
             // val toolbar = mainActivity.findViewById<MaterialToolbar>(R.id.toolbarBoardMain)
@@ -64,12 +72,8 @@ class PostListFragment() : Fragment() {
                 addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
             }
 
-            postListViewModel.run {
-                postListLiveData.observe(viewLifecycleOwner){
-                    recyclerViewPostListAll.adapter?.notifyDataSetChanged()
-                    recyclerViewPostListResult.adapter?.notifyDataSetChanged()
-                }
-            }
+            // 선택한 게시판 타입에 따라 게시글 정보를 가져온다.
+            postViewModel.getPostAll(arguments?.getLong("boardType")!!)
         }
 
         return fragmentPostListBinding.root
@@ -109,16 +113,15 @@ class PostListFragment() : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return postListViewModel.postListLiveData.value?.size!!
+            return postViewModel.postDataList.value?.size!!
         }
 
         override fun onBindViewHolder(holder: AllViewHolder, position: Int) {
-            val curPost = postListViewModel.postListLiveData.value?.get(position)!!
+            val curPost = postViewModel.postDataList.value?.get(position)!!
 
             holder.postIdx = curPost.idx
-            holder.rowPostListSubject.text = "${curPost.title}"
-            // TODO 작성자 데이터 읽어오기
-            holder.rowPostListNickName.text = "${curPost.authorIdx}"
+            holder.rowPostListSubject.text = curPost.title
+//            holder.rowPostListNickName.text = postViewModel.postAuthorNicknameList.value?.get(position)
         }
     }
 
@@ -155,22 +158,20 @@ class PostListFragment() : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return postListViewModel.postListLiveData.value?.size!!
+            return postViewModel.postDataList.value?.size!!
         }
 
         override fun onBindViewHolder(holder: ResultViewHolder, position: Int) {
-            val curPost = postListViewModel.postListLiveData.value?.get(position)!!
+            val curPost = postViewModel.postDataList.value?.get(position)!!
 
             holder.postIdx = curPost.idx
-            holder.rowPostListSubject.text = "${curPost.title}"
-            // TODO 작성자 데이터 읽어오기
-            holder.rowPostListNickName.text = "${curPost.authorIdx}"
+            holder.rowPostListSubject.text = curPost.title
+         //   holder.rowPostListNickName.text = postViewModel.postAuthorNicknameList.value?.get(position)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        postListViewModel.getPostAll()
     }
 }
 

@@ -12,6 +12,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.FirebaseDatabase
 import com.test.mini02_boardproject02.databinding.FragmentAddUserInfoBinding
+import com.test.mini02_boardproject02.repository.UserRepository
 
 
 class AddUserInfoFragment : Fragment() {
@@ -44,7 +45,6 @@ class AddUserInfoFragment : Fragment() {
             buttonAddUserInfoSubmit.run{
                 setOnClickListener {
                     fragmentAddUserInfoBinding.run{
-                        
                         val joinUserNickName = textInputEditTextAddUserInfoNickName.text.toString()
                         val joinUserAge = textInputEditTextAddUserInfoAge.text.toString()
 
@@ -74,11 +74,8 @@ class AddUserInfoFragment : Fragment() {
                             return@setOnClickListener
                         }
 
-                        // 사용자 인덱스 값을 가져온다. 인덱스 값은 전역변수처럼 사용됨
-                        val database = FirebaseDatabase.getInstance()
-                        val userIdxRef = database.getReference("UserIdx")
                         // var userIdx = 0L
-                        userIdxRef.get().addOnCompleteListener {
+                        UserRepository.getUserIdx {
 //                            for (a1 in it.result.children) {
 //                                userIdx = a1.value as Long
 //                            }
@@ -107,20 +104,15 @@ class AddUserInfoFragment : Fragment() {
                             val user = User(userIdx, userId!!, userPw!!, joinUserNickName,
                                 joinUserAge.toLong(), hobbyList)
 
-                            val userDataRef = database.getReference("UserData")
-
-                            userDataRef.push().setValue(user).addOnCompleteListener {
-
-                                userIdxRef.get().addOnCompleteListener {
-                                    // 사용자 인덱스 관리 객체에 접근해서 값 수정
-                                    it.result.ref.setValue(userIdx)
-
+                            UserRepository.addUserInfo(user) {
+                                UserRepository.setUserIdx(userIdx) {
                                     Snackbar.make(fragmentAddUserInfoBinding.root, "가입이 완료되었습니다", Snackbar.LENGTH_SHORT).show()
 
                                     mainActivity.removeFragment(MainActivity.ADD_USER_INFO_FRAGMENT)
                                     mainActivity.removeFragment(MainActivity.JOIN_FRAGMENT)
                                 }
                             }
+
                         }
                     }
                 }

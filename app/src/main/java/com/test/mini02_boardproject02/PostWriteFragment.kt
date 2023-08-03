@@ -27,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.test.mini02_boardproject02.databinding.FragmentPostWriteBinding
+import com.test.mini02_boardproject02.repository.PostRepository
 import com.test.mini02_boardproject02.vm.Post
 import java.io.File
 import java.text.SimpleDateFormat
@@ -164,10 +165,7 @@ class PostWriteFragment : Fragment() {
                                     return@setOnMenuItemClickListener true
                                 }
 
-                                val database = FirebaseDatabase.getInstance()
-                                // 게시글 인덱스 번호
-                                val postIdxRef = database.getReference("PostIdx")
-                                postIdxRef.get().addOnCompleteListener {
+                                PostRepository.getPostIdx {
                                     // 게시글 인덱스
                                     var postIdx = it.result.value as Long
                                     // 게시글 인덱스 증가
@@ -189,21 +187,20 @@ class PostWriteFragment : Fragment() {
                                         fileName, mainActivity.loginUser.idx,
                                         createDate, boardType.toLong())
 
-                                    val postDataRef = database.getReference("PostData")
-                                    postDataRef.push().setValue(post).addOnCompleteListener {
-                                        postIdxRef.get().addOnCompleteListener {
-                                            // 다음 대비 방금 사용한 인덱스 값 갱신
-                                            it.result.ref.setValue(postIdx)
+                                    PostRepository.addPostInfo(post) {
+                                        // 게시글 번호를 번들에 담아준다.
+                                        val newBundle = Bundle()
+                                        newBundle.putLong("postIdx", post.idx)
+
+                                        PostRepository.setPostIdx(postIdx) {
                                             if (imageUploadUri != null) {
-                                                val storage = FirebaseStorage.getInstance()
-                                                val imageRef = storage.reference.child(fileName)
-                                                imageRef.putFile(imageUploadUri!!)
+                                                PostRepository.uploadImage(imageUploadUri!!, fileName){
+                                                    Snackbar.make(fragmentPostWriteBinding.root, "게시글이 등록되었습니다.", Snackbar.LENGTH_SHORT).show()
+                                                    mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, newBundle)
+                                                }
                                             }
 
                                             Snackbar.make(fragmentPostWriteBinding.root, "게시글이 등록되었습니다.", Snackbar.LENGTH_SHORT).show()
-
-                                            val newBundle = Bundle()
-                                            newBundle.putLong("postIdx", post.idx)
                                             mainActivity.replaceFragment(MainActivity.POST_READ_FRAGMENT, true, newBundle)
                                         }
                                     }

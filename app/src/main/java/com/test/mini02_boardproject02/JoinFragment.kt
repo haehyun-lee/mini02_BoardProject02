@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.FirebaseDatabase
 import com.test.mini02_boardproject02.databinding.FragmentJoinBinding
+import com.test.mini02_boardproject02.vm.UserViewModel
 
 
 class JoinFragment : Fragment() {
@@ -16,12 +18,28 @@ class JoinFragment : Fragment() {
     lateinit var fragmentJoinBinding: FragmentJoinBinding
     lateinit var mainActivity: MainActivity
 
+    lateinit var userViewModel: UserViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         fragmentJoinBinding = FragmentJoinBinding.inflate(inflater)
         mainActivity = activity as MainActivity
+
+        userViewModel = ViewModelProvider(mainActivity)[UserViewModel::class.java]
+        userViewModel.run {
+            userId.observe(mainActivity){
+                fragmentJoinBinding.textInputEditTextJoinUserId.setText(it)
+            }
+            userPw.observe(mainActivity){
+                fragmentJoinBinding.textInputEditTextJoinUserPw.setText(it)
+
+            }
+            userPw2.observe(mainActivity){
+                fragmentJoinBinding.textInputEditTextJoinUserPw2.setText(it)
+            }
+        }
 
         fragmentJoinBinding.run{
             mainActivity.showSoftInput(textInputEditTextJoinUserId, 200)
@@ -117,5 +135,10 @@ class JoinFragment : Fragment() {
             newBundle.putString("password", joinUserPw)
             mainActivity.replaceFragment(MainActivity.ADD_USER_INFO_FRAGMENT, true, newBundle)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        userViewModel.reset()
     }
 }

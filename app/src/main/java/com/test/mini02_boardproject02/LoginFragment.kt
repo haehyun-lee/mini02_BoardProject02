@@ -6,16 +6,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.FirebaseDatabase
 import com.test.mini02_boardproject02.databinding.FragmentLoginBinding
+import com.test.mini02_boardproject02.repository.UserRepository
+import com.test.mini02_boardproject02.vm.UserViewModel
 import kotlin.concurrent.thread
 
 class LoginFragment : Fragment() {
 
     lateinit var fragmentLoginBinding: FragmentLoginBinding
     lateinit var mainActivity: MainActivity
+
+    lateinit var userViewModel:UserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,7 +31,21 @@ class LoginFragment : Fragment() {
         fragmentLoginBinding = FragmentLoginBinding.inflate(inflater)
         mainActivity = activity as MainActivity
 
+        userViewModel = ViewModelProvider(mainActivity)[UserViewModel::class.java]
+        userViewModel.run{
+            userId.observe(mainActivity){
+                // 테스트용 임시 로그인 정보
+                // fragmentLoginBinding.textInputEditTextLoginUserId.setText(it)
+                fragmentLoginBinding.textInputEditTextLoginUserId.setText("test")
+            }
+            userPw.observe(mainActivity){
+                // fragmentLoginBinding.textInputEditTextLoginUserPw.setText(it)
+                fragmentLoginBinding.textInputEditTextLoginUserPw.setText("1234")
+            }
+        }
+
         fragmentLoginBinding.run{
+
             // toolbar
             toolbarLogin.run{
                 title = "로그인"
@@ -88,13 +107,8 @@ class LoginFragment : Fragment() {
             }
 
             thread {
-                // Firebase 에서 회원 정보 가져오기
-                val database = FirebaseDatabase.getInstance()
-                val userDataRef = database.getReference("UserData")
-
                 // 아이디 탐색
-                userDataRef.orderByChild("id").equalTo(loginUserId).get()
-                    .addOnCompleteListener {
+                UserRepository.getUserInfoByUserId(loginUserId) {
                         if (!it.result.exists()) {
                             // 일치하는 아이디 없다면
                             val builder = MaterialAlertDialogBuilder(mainActivity).apply {
@@ -143,6 +157,11 @@ class LoginFragment : Fragment() {
                     }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        userViewModel.reset()
     }
 
 }

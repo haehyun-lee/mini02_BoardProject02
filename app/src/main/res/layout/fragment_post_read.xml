@@ -31,16 +31,53 @@
                 android:layout_height="match_parent"
                 android:hint="제목"
                 android:transitionGroup="true"
-                app:startIconDrawable="@drawable/edit_24px">
+                app:startIconDrawable="@drawable/title_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditTextPostReadTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:editable="false"
                     android:enabled="false"
                     android:inputType="text|textPersonName"
                     android:text="제목입니다"
+                    android:textColor="@color/black" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutPostReadAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:hint="작성자"
+                android:transitionGroup="true"
+                app:startIconDrawable="@drawable/account_box_24px">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditTextPostReadAuthor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:inputType="text|textPersonName"
+                    android:text="작성자"
+                    android:textColor="@color/black" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutPostReadDate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:hint="작성 날짜"
+                android:transitionGroup="true"
+                app:startIconDrawable="@drawable/calendar_month_24px">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputEditTextPostReadDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:inputType="text"
+                    android:text="0000-00-00"
                     android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,13 +88,12 @@
                 android:layout_marginTop="10dp"
                 android:hint="내용"
                 android:transitionGroup="true"
-                app:startIconDrawable="@drawable/assignment_24px">
+                app:startIconDrawable="@drawable/description_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditTextPostReadContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:editable="false"
                     android:enabled="false"
                     android:inputType="text|textMultiLine"
                     android:text="내용입니다"

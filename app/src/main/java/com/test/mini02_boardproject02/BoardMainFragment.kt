@@ -38,7 +38,7 @@ class BoardMainFragment : Fragment() {
 
             // toolbar
             toolbarBoardMain.run{
-                title = "게시판메인"
+                title = "전체 게시판"
 
                 setNavigationIcon(R.drawable.menu_24px)
                 setNavigationOnClickListener {
@@ -68,27 +68,42 @@ class BoardMainFragment : Fragment() {
                         // 전체 게시판
                         R.id.item_board_main_all -> {
                             // 프래그먼트에게 전달할 객체를 가지고 있는 번들
-                            replaceFragment(POST_LIST_FRAGMENT, false, false, null)
+                            toolbarBoardMain.title = "전체게시판"
+                            val newBundle = Bundle()
+                            newBundle.putLong("boardType", 0L)
+                            replaceFragment(POST_LIST_FRAGMENT, false, false, newBundle)
                             drawerLayoutBoardMain.close()
                         }
                         // 자유 게시판
                         R.id.item_board_main_free -> {
-                            replaceFragment(POST_LIST_FRAGMENT, false,  false, null)
+                            toolbarBoardMain.title = "자유 게시판"
+                            val newBundle = Bundle()
+                            newBundle.putLong("boardType", 1L)
+                            replaceFragment(POST_LIST_FRAGMENT, false,  false, newBundle)
                             drawerLayoutBoardMain.close()
                         }
                         // 유머 게시판
                         R.id.item_board_main_gag -> {
-                            replaceFragment(POST_LIST_FRAGMENT, false, false, null)
+                            toolbarBoardMain.title = "유머 게시판"
+                            val newBundle = Bundle()
+                            newBundle.putLong("boardType", 2L)
+                            replaceFragment(POST_LIST_FRAGMENT, false, false, newBundle)
                             drawerLayoutBoardMain.close()
                         }
                         // 질문 게시판
                         R.id.item_board_main_qna -> {
-                            replaceFragment(POST_LIST_FRAGMENT, false, false, null)
+                            toolbarBoardMain.title = "질문 게시판"
+                            val newBundle = Bundle()
+                            newBundle.putLong("boardType", 3L)
+                            replaceFragment(POST_LIST_FRAGMENT, false, false, newBundle)
                             drawerLayoutBoardMain.close()
                         }
                         // 스포츠 게시판
                         R.id.item_board_main_sports -> {
-                            replaceFragment(POST_LIST_FRAGMENT, false, false, null)
+                            toolbarBoardMain.title = "스포츠 게시판"
+                            val newBundle = Bundle()
+                            newBundle.putLong("boardType", 4L)
+                            replaceFragment(POST_LIST_FRAGMENT, false, false, newBundle)
                             drawerLayoutBoardMain.close()
                         }
                         // 사용자 정보 수정
@@ -113,7 +128,9 @@ class BoardMainFragment : Fragment() {
                 }
             }
 
-            replaceFragment(POST_LIST_FRAGMENT, false, false, null)
+            val newBundle = Bundle()
+            newBundle.putLong("boardType", 0L)
+            replaceFragment(POST_LIST_FRAGMENT, false, false, newBundle)
         }
 
         return fragmentBoardMainBinding.root

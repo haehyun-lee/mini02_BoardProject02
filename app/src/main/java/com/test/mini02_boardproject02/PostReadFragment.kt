@@ -1,25 +1,22 @@
 package com.test.mini02_boardproject02
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.storage.FirebaseStorage
 import com.test.mini02_boardproject02.databinding.FragmentPostReadBinding
 import com.test.mini02_boardproject02.vm.PostViewModel
-import java.net.HttpURLConnection
-import java.net.URL
-import kotlin.concurrent.thread
 
 class PostReadFragment() : Fragment() {
     lateinit var fragmentPostReadBinding: FragmentPostReadBinding
     lateinit var mainActivity: MainActivity
 
     lateinit var postViewModel: PostViewModel
-    var postIdx :Long = 0L
+
+    // 게시글 인덱스 번호
+    var readPostIdx = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,11 +25,8 @@ class PostReadFragment() : Fragment() {
         fragmentPostReadBinding = FragmentPostReadBinding.inflate(inflater)
         mainActivity = activity as MainActivity
         
-        // 현재 표시할 게시글 번호
-        postIdx = arguments?.getLong("postIdx", 0L)!!
-        
         // ViewModel 객체
-        postViewModel = ViewModelProvider(this@PostReadFragment)[PostViewModel::class.java]
+        postViewModel = ViewModelProvider(mainActivity)[PostViewModel::class.java]
 
         fragmentPostReadBinding.run{
             // 뷰 초기화
@@ -42,31 +36,28 @@ class PostReadFragment() : Fragment() {
 
             // ViewModel Observer
             postViewModel.run {
-                postLiveData.observe(viewLifecycleOwner){
-                    textInputEditTextPostReadTitle.setText(it.title)
-                    textInputEditTextPostReadContent.setText(it.content)
-
-                    // Firebase에서 이미지 내려받아서 세팅
-                    if (it.image != "None") {
-                        val storage = FirebaseStorage.getInstance()
-                        val fileRef = storage.reference.child(it.image)
-
-                        fileRef.downloadUrl.addOnSuccessListener {
-                            thread {
-                                val url = URL(it.toString())
-                                val httpURLConnection = url.openConnection() as HttpURLConnection
-                                val bitmap = BitmapFactory.decodeStream(httpURLConnection.inputStream)
-                                mainActivity.runOnUiThread {
-                                    imageViewPostRead.setImageBitmap(bitmap)
-                                }
-                            }
-                        }
+                postTitle.observe(mainActivity){
+                    textInputEditTextPostReadTitle.setText(it)
+                }
+                postAuthorName.observe(mainActivity){
+                    textInputEditTextPostReadAuthor.setText(it)
+                }
+                postCreateDate.observe(mainActivity){
+                    textInputEditTextPostReadDate.setText(it)
+                }
+                postContent.observe(mainActivity){
+                    textInputEditTextPostReadContent.setText(it)
+                }
+                postFileName.observe(mainActivity){
+                    if (it == "None") {
+                        fragmentPostReadBinding.imageViewPostRead.visibility = View.INVISIBLE
                     }
                 }
+                postImage.observe(mainActivity){
+                    fragmentPostReadBinding.imageViewPostRead.visibility = View.VISIBLE
+                    fragmentPostReadBinding.imageViewPostRead.setImageBitmap(it)
+                }
             }
-
-            // 게시글 내용으로 ViewModel 데이터 변경
-            postViewModel.getPostData(postIdx!!)
 
             toolbarPostRead.run{
                 title = "글읽기"
@@ -92,7 +83,9 @@ class PostReadFragment() : Fragment() {
                                 textInputEditTextPostReadText.isEnabled = false
                             }
                              */
-                            mainActivity.replaceFragment(MainActivity.POST_MODIFY_FRAGMENT, true, null)
+                            val newBundle = Bundle()
+                            newBundle.putLong("postIdx", readPostIdx)
+                            mainActivity.replaceFragment(MainActivity.POST_MODIFY_FRAGMENT, true, newBundle)
                         }
                         R.id.item_post_read_delete -> {
                             mainActivity.removeFragment(MainActivity.POST_WRITE_FRAGMENT)
@@ -106,6 +99,11 @@ class PostReadFragment() : Fragment() {
             }
         }
 
+        // 현재 표시할 게시글 인덱스 번호를 받는다
+        readPostIdx = arguments?.getLong("postIdx")!!
+        // 게시글 정보를 가져온다. 게시글 내용으로 ViewModel 데이터 변경
+        postViewModel.setPostReadData(readPostIdx.toDouble())
+
         return fragmentPostReadBinding.root
     }
 
@@ -113,6 +111,5 @@ class PostReadFragment() : Fragment() {
         super.onResume()
         // 게시글 내용으로 ViewModel 데이터 변경
         // postViewModel.getPostData(postIdx!!)
-
     }
 }
